@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результат теста</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1>Результат теста</h1>
+        <div class="alert {% if score >= test.pass_score %}alert-success{% else %}alert-danger{% endif %}">
+            <p>Ваш результат: {{ score }} из {{ test.pass_score }}</p>
+            {% if score >= test.pass_score %}
+            <p>Поздравляем! Вы прошли тест.</p>
+            {% else %}
+            <p>К сожалению, вы не прошли тест.</p>
+            {% endif %}
+        </div>
+        <a href="{% url 'enter_test' %}" class="btn btn-primary">Вернуться к тестам</a>
+    </div>
+</body>
+
+</html>
