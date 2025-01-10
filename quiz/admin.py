@@ -11,7 +11,7 @@ class TestAdmin(admin.ModelAdmin):
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('text', 'test', 'score')
+    list_display = ('text', 'test', 'score', 'type')
 
 @admin.register(Answer)
 class AnswerAdmin(admin.ModelAdmin):
@@ -20,3 +20,4 @@ class AnswerAdmin(admin.ModelAdmin):
 @admin.register(UserTestResult)
 class UserTestResultAdmin(admin.ModelAdmin):
     list_display = ('user', 'test', 'score', 'completed_at')
+

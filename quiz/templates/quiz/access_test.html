@@ -11,11 +11,17 @@
 <body>
     <div class="container mt-5">
         <h1>Введите ключ доступа</h1>
+        {% if error_message %}
+            <div class="alert alert-danger">
+                {{ error_message }}
+            </div>
+        {% endif %}
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn btn-primary">Продолжить</button>
         </form>
+
     </div>
 </body>
 

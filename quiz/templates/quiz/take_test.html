@@ -10,20 +10,38 @@
 
 <body>
     <div class="container mt-5">
+        <div id="timer" class="alert alert-info" style="font-size: 1.5em;">
+            Оставшееся время: <span id="time">{{ test.duration }}:00</span>
+        </div>
         <h1>{{ test.name }}</h1>
-        <form method="post">
+        <form id = "test-form" method="post">
             {% csrf_token %}
             {% for question in questions %}
             <div class="card mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">{{ question.text }}</h5>
+                    <h5 class="card-title">{{ forloop.counter }}. {{ question.text }}</h5>
+
+                    {% if question.type == 1 %}
                     {% for answer in question.answer_set.all %}
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="question_{{ question.id }}"
-                            value="{{ answer.id }}">
-                        <label class="form-check-label">{{ answer.text }}</label>
+                        <input class="form-check-input" type="radio" id="answer_{{ answer.id }}" name="question_{{ question.id }}" value="{{ answer.id }}">
+                        <label class="form-check-label" for="answer_{{ answer.id }}">{{ answer.text }}</label>
                     </div>
                     {% endfor %}
+
+                    {% elif question.type == 2 %}
+                    {% for answer in question.answer_set.all %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="answer_{{ answer.id }}" name="question_{{ question.id }}" value="{{ answer.id }}">
+                        <label class="form-check-label" for="answer_{{ answer.id }}">{{ answer.text }}</label>
+                    </div>
+                    {% endfor %}
+
+                    {% elif question.type == 3 %}
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="question_{{ question.id }}">
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
@@ -31,5 +49,21 @@
         </form>
     </div>
 </body>
+
+<script>
+    let timeRemaining = {{ test.duration }} * 60;
+    const timerDisplay = document.getElementById('time');
+    const timerInterval = setInterval(() => {
+        const minutes = Math.floor(timeRemaining / 60);
+        const seconds = timeRemaining % 60;
+        timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        timeRemaining--;
+        if (timeRemaining < 0) {
+            clearInterval(timerInterval);
+            alert('Время вышло!');
+            document.getElementById('test-form').submit();
+        }
+    }, 1000);
+</script>
 
 </html>

@@ -1,9 +1,10 @@
 from django.urls import path
 from . import views
+from .views import TestView, AccessTestView
 
 urlpatterns = [
-    path('', views.enter_test, name='home'),  # Корневой путь
-    path('signup/', views.signup, name='signup'),
-    path('enter-test/', views.enter_test, name='enter_test'),
-    path('take-test/<int:test_id>/', views.take_test, name='take_test'),
+    path('', AccessTestView.as_view(), name='home'),  # Корневой путь
+    path('sign-up', views.sign_up, name='sign_up'),
+    path('access-test', AccessTestView.as_view(), name='access_test'),
+    path('tests/<int:test_id>', TestView.as_view(), name='take_test'),
 ]
