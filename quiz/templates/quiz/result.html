@@ -11,15 +11,15 @@
 <body>
     <div class="container mt-5">
         <h1>Результат теста</h1>
-        <div class="alert {% if score >= test.pass_score %}alert-success{% else %}alert-danger{% endif %}">
-            <p>Ваш результат: {{ score }} из {{ test.pass_score }}</p>
-            {% if score >= test.pass_score %}
+        <div class="alert {% if score >= pass_score %} alert-success {% else %} alert-danger {% endif %}">
+            <p>Ваш результат: {{ score }}. Проходной балл: {{ pass_score }}</p>
+            {% if score >= pass_score %}
             <p>Поздравляем! Вы прошли тест.</p>
             {% else %}
             <p>К сожалению, вы не прошли тест.</p>
             {% endif %}
         </div>
-        <a href="{% url 'enter_test' %}" class="btn btn-primary">Вернуться к тестам</a>
+        <a href="{% url 'access_test' %}" class="btn btn-primary">Вернуться к тестам</a>
     </div>
 </body>
 
