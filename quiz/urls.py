@@ -1,10 +1,13 @@
 from django.urls import path
-from . import views
-from .views import TestView, AccessTestView
+from django.contrib.auth.views import LogoutView, LoginView
+from .views import TestView, AccessTestView, SignUpView, UserTestResultsView
 
 urlpatterns = [
-    path('', AccessTestView.as_view(), name='home'),  # Корневой путь
-    path('sign-up', views.sign_up, name='sign_up'),
+    path('', AccessTestView.as_view(), name='home'),
+    path('sign-up', SignUpView.as_view(), name='sign_up'),
+    path('log-in', LoginView.as_view(), name='log_in'),
+    path('log-out', LogoutView.as_view(), name='log_out'),
     path('access-test', AccessTestView.as_view(), name='access_test'),
     path('tests/<int:test_id>', TestView.as_view(), name='take_test'),
+    path('results', UserTestResultsView.as_view(), name='user_results')
 ]

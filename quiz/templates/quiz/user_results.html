@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты тестов</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <header class="bg-light p-3 mb-3">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <span class="me-3">Здравствуйте, {{ user.username }}!</span>
+                <a href="{% url 'home' %}" class="btn btn-primary btn-sm me-2">Пройти тест</a>
+                <form method="post" action="{% url 'log_out' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">Выйти</button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="mb-3">Ваши результаты тестов</h1>
+
+        {% if results %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Предмет</th>
+                    <th>Тест</th>
+                    <th>Набранный балл</th>
+                    <th>Проходной балл</th>
+                    <th>Время завершения</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                <tr>
+                    <td>{{ result.test.subject.name }}</td>
+                    <td>{{ result.test.name }}</td>
+                    <td>{{ result.score }}</td>
+                    <td>{{ result.test.pass_score }}</td>
+                    <td>{{ result.completed_at }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-info">У вас пока нет результатов тестов.</div>
+        {% endif %}
+
+    </div>
+</body>
+
+</html>
