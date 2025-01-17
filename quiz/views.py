@@ -1,19 +1,28 @@
 from django import views
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login
+from django.contrib.auth import login, mixins
 from django.utils import timezone
 from quiz.models import Test, Question, UserTestResult
 from quiz.forms import SignUpForm, TestAccessForm
 
 
-def sign_up(request):
-    if request.method == 'POST':
+class UserTestResultsView(mixins.LoginRequiredMixin, views.View):
+    def get(self, request):
+        user_results = UserTestResult.objects.filter(user=request.user)
+        return render(request, 'quiz/user_results.html', {'results': user_results})
+
+
+class SignUpView(views.View):
+    def get(self, request):
+        return render(request, 'registration/sign_up.html', {'form': SignUpForm()})
+
+    def post(self, request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             return redirect('home')
-    return render(request, 'registration/sign_up.html', {'form': SignUpForm()})
+        return render(request, 'registration/sign_up.html', {'form': form})
 
 
 class AccessTestView(views.View):
@@ -62,5 +71,5 @@ class TestView(views.View):
                     score += question.score
 
         UserTestResult.objects.create(user=request.user, test=test, score=score)
-        return render(request, 'quiz/result.html', {'score': score, 'pass_score': test.pass_score})
+        return render(request, 'quiz/test_result.html', {'score': score, 'pass_score': test.pass_score})
 
