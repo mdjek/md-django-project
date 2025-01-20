@@ -1,0 +1,8 @@
+version: '3.12'
+
+services:
+ django:
+    build: .    
+    container_name: django
+    ports:      
+      - "8000:8000"
