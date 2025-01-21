@@ -6,12 +6,6 @@ from quiz.models import Test, Question, UserTestResult
 from quiz.forms import SignUpForm, TestAccessForm
 
 
-class UserTestResultsView(mixins.LoginRequiredMixin, views.View):
-    def get(self, request):
-        user_results = UserTestResult.objects.filter(user=request.user)
-        return render(request, 'quiz/user_results.html', {'results': user_results})
-
-
 class SignUpView(views.View):
     def get(self, request):
         return render(request, 'registration/sign_up.html', {'form': SignUpForm()})
@@ -41,7 +35,7 @@ class AccessTestView(views.View):
             return render(request, 'quiz/access_test.html', {'error_message': 'Тест недоступен в данное время'})
 
 
-class TestView(views.View):
+class TestView(mixins.LoginRequiredMixin, views.View):
     def get(self, request, test_id):
         test = get_object_or_404(Test, id=test_id)
         questions = Question.objects.filter(test=test)
@@ -73,3 +67,8 @@ class TestView(views.View):
         UserTestResult.objects.create(user=request.user, test=test, score=score)
         return render(request, 'quiz/test_result.html', {'score': score, 'pass_score': test.pass_score})
 
+
+class UserTestResultsView(mixins.LoginRequiredMixin, views.View):
+    def get(self, request):
+        user_results = UserTestResult.objects.filter(user=request.user)
+        return render(request, 'quiz/user_results.html', {'results': user_results})
