@@ -48,10 +48,11 @@ class TestView(mixins.LoginRequiredMixin, views.View):
 
         for question in questions:
             correct_answers = question.answer_set.filter(is_correct=True)
+
             if question.type == 1:
-                selected_answer = int(request.POST.get(f'question_{question.id}'))
+                selected_answer = request.POST.get(f'question_{question.id}')
                 correct_answer = correct_answers.values_list('id', flat=True).first()
-                if selected_answer and selected_answer == correct_answer:
+                if selected_answer and int(selected_answer) == correct_answer:
                     score += question.score
             elif question.type == 2:
                 selected_answers = set(map(int, request.POST.getlist(f'question_{question.id}')))
