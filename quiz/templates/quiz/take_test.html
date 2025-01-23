@@ -10,79 +10,59 @@
 
 <body>
     <div class="container mt-5">
-        <div id="timer" class="alert alert-info" style="font-size: 1.5em;">
-            Оставшееся время: <span id="time">{{ test.duration }}:00</span>
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div id="timer" class="alert alert-info" style="font-size: 1.5em;">
+                    Оставшееся время: <span id="time">{{ test.duration }}:00</span>
+                </div>
+            </div>
         </div>
         <h1>{{ test.name }}</h1>
         <form id = "test-form" method="post">
             {% csrf_token %}
-            {% for question in questions %}
-            <div class="card mb-3">
-                <div class="row g-2">
-                    <div class="col-sm-10">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ forloop.counter }}. {{ question.text }}</h5>
-        
-                            {% if question.type == 1 %}
-                            {% for answer in question.answer_set.all %}
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" id="answer_{{ answer.id }}" name="question_{{ question.id }}" value="{{ answer.id }}">
-                                <label class="form-check-label" for="answer_{{ answer.id }}">{{ answer.text }}</label>
-                            </div>
-                            {% endfor %}
-        
-                            {% elif question.type == 2 %}
-                            {% for answer in question.answer_set.all %}
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="answer_{{ answer.id }}" name="question_{{ question.id }}" value="{{ answer.id }}">
-                                <label class="form-check-label" for="answer_{{ answer.id }}">{{ answer.text }}</label>
-                            </div>
-                            {% endfor %}
-        
-                            {% elif question.type == 3 %}
-                            <div class="form-group">
-                                <input type="text" class="form-control" name="question_{{ question.id }}">
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col-sm-2">
-                        <div class="card-body">
-                            <div>За правильный ответ будет начислено <strong>{{ question.score }}</strong> баллов</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-body">
-                    <h5 class="card-title">{{ forloop.counter }}. {{ question.text }}</h5>
-
-                    {% if question.type == 1 %}
-                    {% for answer in question.answer_set.all %}
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" id="answer_{{ answer.id }}" name="question_{{ question.id }}" value="{{ answer.id }}">
-                        <label class="form-check-label" for="answer_{{ answer.id }}">{{ answer.text }}</label>
-                    </div>
-                    {% endfor %}
-
-                    {% elif question.type == 2 %}
-                    {% for answer in question.answer_set.all %}
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="answer_{{ answer.id }}" name="question_{{ question.id }}" value="{{ answer.id }}">
-                        <label class="form-check-label" for="answer_{{ answer.id }}">{{ answer.text }}</label>
-                    </div>
-                    {% endfor %}
-
-                    {% elif question.type == 3 %}
-                    <div class="form-group">
-                        <input type="text" class="form-control" name="question_{{ question.id }}">
-                    </div>
-                    {% endif %}
-                </div>
-                <div>За правильный ответ будет начислено <strong>{{ question.score }}</strong> баллов</div>
-            </div>
+            {% for question in questions %}            
+                <div class="row mb-3">
+                    <div class="col-md-9 col-sm-8">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ forloop.counter }}. {{ question.text }}</h5>
             
+                                {% if question.type == 1 %}
+                                {% for answer in question.answer_set.all %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="answer_{{ answer.id }}" name="question_{{ question.id }}" value="{{ answer.id }}">
+                                    <label class="form-check-label" for="answer_{{ answer.id }}">{{ answer.text }}</label>
+                                </div>
+                                {% endfor %}
+            
+                                {% elif question.type == 2 %}
+                                {% for answer in question.answer_set.all %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="answer_{{ answer.id }}" name="question_{{ question.id }}" value="{{ answer.id }}">
+                                    <label class="form-check-label" for="answer_{{ answer.id }}">{{ answer.text }}</label>
+                                </div>
+                                {% endfor %}
+            
+                                {% elif question.type == 3 %}
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="question_{{ question.id }}">
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-4">
+                        <div class="card-body">
+                            <div class="alert alert-light">За правильный ответ будет начислено <strong>{{ question.score }}</strong> баллов</div>
+                        </div>
+                    </div>
+                </div>
             {% endfor %}
-            <button type="submit" class="btn btn-primary">Завершить тест</button>
+            <div class="row mb-3">
+                <div class="col-md-4 col-sm-6">
+                    <button type="submit" class="btn btn-primary">Завершить тест</button>
+                </div>    
+            </div>
         </form>
     </div>
 </body>
