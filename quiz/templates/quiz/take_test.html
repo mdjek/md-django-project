@@ -18,6 +18,41 @@
             {% csrf_token %}
             {% for question in questions %}
             <div class="card mb-3">
+                <div class="row g-2">
+                    <div class="col-sm-10">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ forloop.counter }}. {{ question.text }}</h5>
+        
+                            {% if question.type == 1 %}
+                            {% for answer in question.answer_set.all %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" id="answer_{{ answer.id }}" name="question_{{ question.id }}" value="{{ answer.id }}">
+                                <label class="form-check-label" for="answer_{{ answer.id }}">{{ answer.text }}</label>
+                            </div>
+                            {% endfor %}
+        
+                            {% elif question.type == 2 %}
+                            {% for answer in question.answer_set.all %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="answer_{{ answer.id }}" name="question_{{ question.id }}" value="{{ answer.id }}">
+                                <label class="form-check-label" for="answer_{{ answer.id }}">{{ answer.text }}</label>
+                            </div>
+                            {% endfor %}
+        
+                            {% elif question.type == 3 %}
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="question_{{ question.id }}">
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="card-body">
+                            <div>За правильный ответ будет начислено <strong>{{ question.score }}</strong> баллов</div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card-body">
                     <h5 class="card-title">{{ forloop.counter }}. {{ question.text }}</h5>
 
@@ -43,7 +78,9 @@
                     </div>
                     {% endif %}
                 </div>
+                <div>За правильный ответ будет начислено <strong>{{ question.score }}</strong> баллов</div>
             </div>
+            
             {% endfor %}
             <button type="submit" class="btn btn-primary">Завершить тест</button>
         </form>
