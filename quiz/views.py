@@ -31,8 +31,9 @@ class AccessTestView(views.View):
             test = get_object_or_404(Test, access_key=access_key)
             now = timezone.now()
             if test.start_time <= now <= test.end_time:
-                return redirect('test_description', test_id=test.id)  # Перенаправление на описание теста
+                return redirect('test_description', test_id=test.id)
             return render(request, 'quiz/access_test.html', {'error_message': 'Тест недоступен в данное время'})
+
 
 class TestDescriptionView(mixins.LoginRequiredMixin, views.View):
     def get(self, request, test_id):
@@ -45,6 +46,7 @@ class TestDescriptionView(mixins.LoginRequiredMixin, views.View):
             'question_count': question_count,
             'max_score': max_score,
         })
+
 
 class TestView(mixins.LoginRequiredMixin, views.View):
     def get(self, request, test_id):
