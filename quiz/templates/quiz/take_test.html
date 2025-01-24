@@ -10,14 +10,14 @@
 
 <body>
     <div class="container mt-5">
-        <div class="row mb-3">
+        <div class="row">
             <div class="col-md-12">
-                <div id="timer" class="alert alert-info" style="font-size: 1.5em;">
+                <div id="timer" class="alert alert-info mb-2" style="font-size: 1.5em;">
                     Оставшееся время: <span id="time">{{ test.duration }}:00</span>
                 </div>
             </div>
         </div>
-        <h1>{{ test.name }}</h1>
+        <h1 class="mb-3">{{ test.name }}</h1>
         <form id = "test-form" method="post">
             {% csrf_token %}
             {% for question in questions %}            

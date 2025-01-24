@@ -10,7 +10,7 @@
 
 <body>
     <div class="container mt-5">
-        <h1>Результат теста</h1>
+        <h1 class="mb-3">Результат теста</h1>
         <div class="alert {% if score >= pass_score %} alert-success {% else %} alert-danger {% endif %}">
             <p>Ваш результат: {{ score }}. Проходной балл: {{ pass_score }}</p>
             {% if score >= pass_score %}
