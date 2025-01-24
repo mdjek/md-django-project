@@ -9,6 +9,6 @@ urlpatterns = [
     path('log-out', LogoutView.as_view(), name='log_out'),
     path('access-test', AccessTestView.as_view(), name='access_test'),
     path('test/<int:test_id>/description', TestDescriptionView.as_view(), name='test_description'),
-    path('test/<int:test_id>', TestView.as_view(), name='take_test'),
+    path('test/<int:test_id>/', TestView.as_view(), name='take_test'),
     path('results', UserTestResultsView.as_view(), name='user_results')
 ]
