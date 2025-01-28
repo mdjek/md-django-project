@@ -9,38 +9,41 @@
 </head>
 
 <body>
-    <header class="bg-light p-3 mb-2">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    {% if user.is_authenticated %}
-                        <span class="me-3">Здравствуйте, {{ user.username }}!</span>
-                        <a href="{% url 'user_results' %}" class="btn btn-primary btn-sm me-2">Результаты</a>
-                        <form method="post" action="{% url 'log_out' %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm">Выйти</button>
-                        </form>
-                    {% else %}
-                        <a href="{% url 'log_in' %}" class="btn btn-primary btn-sm">Войти</a>
+<header class="bg-light p-3 mb-2">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                {% if user.is_authenticated %}
+                    <span class="me-3">Здравствуйте, {{ user.username }}!</span>
+                    {% if user.is_staff %}
+                        <a href="{% url 'test_list' %}" class="btn btn-secondary btn-sm me-2">Управление тестами</a>
                     {% endif %}
-                </div>
+                    <a href="{% url 'user_results' %}" class="btn btn-primary btn-sm me-2">Результаты</a>
+                    <form method="post" action="{% url 'log_out' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">Выйти</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'log_in' %}" class="btn btn-primary btn-sm">Войти</a>
+                {% endif %}
             </div>
         </div>
-    </header>
-
-    <div class="container">
-        <h1 class="mb-3">Введите ключ доступа</h1>
-        {% if error_message %}
-            <div class="alert alert-danger">
-                {{ error_message }}
-            </div>
-        {% endif %}
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Продолжить</button>
-        </form>
     </div>
+</header>
+
+<div class="container">
+    <h1 class="mb-3">Введите ключ доступа</h1>
+    {% if error_message %}
+        <div class="alert alert-danger">
+            {{ error_message }}
+        </div>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Продолжить</button>
+    </form>
+</div>
 </body>
 
 </html>

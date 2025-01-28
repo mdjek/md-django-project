@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список тестов</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <header class="bg-light p-3 mb-2">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    {% if user.is_authenticated %}
+                    <span class="me-3">Здравствуйте, {{ user.username }}!</span>
+                    <a href="{% url 'home' %}" class="btn btn-primary btn-sm me-2">Пройти тест</a>
+                    <a href="{% url 'user_results' %}" class="btn btn-primary btn-sm me-2">Результаты</a>
+                    <form method="post" action="{% url 'log_out' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">Выйти</button>
+                    </form>
+                    {% else %}
+                    <a href="{% url 'log_in' %}" class="btn btn-primary btn-sm">Войти</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <h1 class="mb-3">Список тестов</h1>
+        <a href="{% url 'test_create' %}" class="btn btn-primary mb-3">Создать новый тест</a>
+        <ul class="list-group">
+            {% for test in tests %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ test.name }}
+                <div>
+                    <a href="{% url 'test_update' test.pk %}" class="btn btn-success btn-sm">Редактировать</a>
+                    <a href="{% url 'test_delete' test.pk %}" class="btn btn-danger btn-sm">Удалить</a>
+                    <a href="{% url 'test_statistics' test.pk %}" class="btn btn-info btn-sm">Статистика</a>
+                </div>
+            </li>
+            {% empty %}
+            <li class="list-group-item">Нет созданных тестов.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+
+</html>

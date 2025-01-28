@@ -12,6 +12,9 @@
         <div class="container d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
                 <span class="me-3">Здравствуйте, {{ user.username }}!</span>
+                {% if user.is_staff %}
+                <a href="{% url 'test_list' %}" class="btn btn-secondary btn-sm me-2">Управление тестами</a>
+                {% endif %}
                 <a href="{% url 'home' %}" class="btn btn-primary btn-sm me-2">Пройти тест</a>
                 <form method="post" action="{% url 'log_out' %}">
                     {% csrf_token %}

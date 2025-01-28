@@ -1,13 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
 class Subject(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
-
 
 class Test(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
@@ -17,10 +15,10 @@ class Test(models.Model):
     end_time = models.DateTimeField()  # Окончание теста
     duration = models.IntegerField()  # Длительность теста в минутах
     access_key = models.CharField(max_length=50, unique=True)  # Ключ доступа
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tests', null=True, blank=True)  # Разрешаем NULL значения
 
     def __str__(self):
         return self.name
-
 
 class Question(models.Model):
     TYPE_CHOICES = [
@@ -28,7 +26,6 @@ class Question(models.Model):
         (2, 'Multiple Choice'),
         (3, 'Text Response')
     ]
-
     test = models.ForeignKey(Test, on_delete=models.CASCADE)
     text = models.TextField()
     score = models.IntegerField(default=10)  # Балл за вопрос
@@ -37,7 +34,6 @@ class Question(models.Model):
     def __str__(self):
         return self.text
 
-
 class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     text = models.CharField(max_length=200)
@@ -45,7 +41,6 @@ class Answer(models.Model):
 
     def __str__(self):
         return self.text
-
 
 class UserTestResult(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

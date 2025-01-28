@@ -16,7 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "mddjangoproject.pythonanywhere.com"]
 
@@ -79,13 +79,15 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = []
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Используем стандартный бэкенд аутентификации
+]
 
-LOGIN_URL = "log_in"
+AUTH_PASSWORD_VALIDATORS = []  # Отключение валидаторов паролей (если это намеренно)
 
-LOGIN_REDIRECT_URL = "home"
-
-LOGOUT_REDIRECT_URL = "log_in"
+LOGIN_URL = "log_in"  # URL-адрес страницы входа
+LOGIN_REDIRECT_URL = "home"  # URL-адрес перенаправления после успешного входа
+LOGOUT_REDIRECT_URL = "log_in"  # URL-адрес перенаправления после выхода
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
