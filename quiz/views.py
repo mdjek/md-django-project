@@ -22,6 +22,12 @@ def custom_bad_request_view(request, exception=None):
     return render(request, "system/error_page.html", {"title": "Неправильный запрос", "status": 400})
 
 
+class MainPageView(views.View):
+    def get(self, request):
+        form = TestAccessForm()
+        return render(request, "quiz/home.html", {"form": form})
+
+
 class SignUpView(views.View):
     def get(self, request):
         return render(request, "registration/sign_up.html", {"form": SignUpForm()})
