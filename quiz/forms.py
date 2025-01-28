@@ -27,7 +27,7 @@ class TestForm(forms.ModelForm):
         new_subject = cleaned_data.get('new_subject')
 
         if not subject and not new_subject:
-            raise forms.ValidationError("Выберите существующий предмет или введите новый.")
+            raise forms.ValidationError("Выберите существующий предмет или введите новый")
         
         if new_subject:
             subject, created = Subject.objects.get_or_create(name=new_subject)

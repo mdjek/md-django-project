@@ -7,7 +7,7 @@ class SubjectAdmin(admin.ModelAdmin):
 
 @admin.register(Test)
 class TestAdmin(admin.ModelAdmin):
-    list_display = ('name', 'subject', 'start_time', 'end_time', 'duration', 'access_key')
+    list_display = ('name', 'subject', 'start_time', 'end_time', 'duration', 'access_key', 'created_by')
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):

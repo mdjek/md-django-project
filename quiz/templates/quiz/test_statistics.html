@@ -16,6 +16,7 @@
                 <div class="d-flex align-items-center">
                     {% if user.is_authenticated %}
                     <span class="me-3">Здравствуйте, {{ user.username }}!</span>
+                    <a href="{% url 'home' %}" class="btn btn-primary btn-sm me-2">Пройти тест</a>
                     <a href="{% url 'user_results' %}" class="btn btn-primary btn-sm me-2">Результаты</a>
                     <form method="post" action="{% url 'log_out' %}">
                         {% csrf_token %}
@@ -47,12 +48,12 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="3">Нет данных.</td>
+                    <td colspan="3">Нет данных</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        <a href="{% url 'test_list' %}" class="btn btn-secondary mt-3">Назад к списку тестов</a>
+        <a href="{% url 'test_list' %}" class="btn btn-secondary mb-3">Назад к списку тестов</a>
     </div>
 </body>
 

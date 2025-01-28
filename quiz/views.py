@@ -27,7 +27,7 @@ class SignUpView(views.View):
 
             # Добавляем пользователя в группу администраторов, если он регистрируется как администратор
             if user.is_staff:
-                group, created = Group.objects.get_or_create(name='Администраторы')  # Создаем группу, если она не существует
+                group = Group.objects.get(name='Администраторы')
                 user.groups.add(group)
 
             login(request, user)
@@ -107,7 +107,7 @@ class TestCreateView(UserPassesTestMixin, views.View):
 
     def get(self, request):
         form = TestForm()
-        return render(request, self.template_name, {'form': form, 'action': 'create'})
+        return render(request, self.template_name, {'form': form, 'action': 'Создать'})
 
     def post(self, request):
         form = TestForm(request.POST)
@@ -117,7 +117,7 @@ class TestCreateView(UserPassesTestMixin, views.View):
             test.created_by = request.user  # Устанавливаем автора теста
             test.save()
             return redirect(self.success_url)
-        return render(request, self.template_name, {'form': form, 'action': 'create'})
+        return render(request, self.template_name, {'form': form, 'action': 'Создать'})
 
 class TestUpdateView(UserPassesTestMixin, views.View):
     template_name = 'quiz/test_form.html'
@@ -129,7 +129,7 @@ class TestUpdateView(UserPassesTestMixin, views.View):
     def get(self, request, pk):
         test = get_object_or_404(Test, pk=pk, created_by=request.user)
         form = TestForm(instance=test)
-        return render(request, self.template_name, {'form': form, 'action': 'update'})
+        return render(request, self.template_name, {'form': form, 'action': 'Редактировать'})
 
     def post(self, request, pk):
         test = get_object_or_404(Test, pk=pk, created_by=request.user)
@@ -137,7 +137,7 @@ class TestUpdateView(UserPassesTestMixin, views.View):
         if form.is_valid():
             form.save()
             return redirect(self.success_url)
-        return render(request, self.template_name, {'form': form, 'action': 'update'})
+        return render(request, self.template_name, {'form': form, 'action': 'Редактировать'})
 
 class TestDeleteView(UserPassesTestMixin, views.View):
     success_url = reverse_lazy('test_list')
