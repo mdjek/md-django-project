@@ -4,38 +4,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ввод ключа доступа</title>
+    <title>Главная страница Quiz</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        header {
+            background: #000000b5;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15), inset 0 -1px 0 rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        body {
+            {% comment %} background: no-repeat url(https://avatars.mds.yandex.net/i?id=dd3fcc8ed69faef53cbfabf3d2e66565_l-5288042-images-thumbs&n=13) 0 0 / cover; {% endcomment %}
+            background: no-repeat url(https://i.pinimg.com/originals/76/74/af/7674afaab0239fcc95db982e75bdc684.jpg) 0 0 / cover;
+            height: 100vh;
+        }
+    </style>
 </head>
 
 <body>
-    <header class="bg-light p-3 mb-2">
+    <header class="p-3 mb-2">
         <div class="container">
-            Система тестирования Quiz
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    {% if user.is_authenticated %}
-                        <span class="me-3">Здравствуйте, {{ user.username }}!</span>
-                        <a href="{% url 'user_results' %}" class="btn btn-primary btn-sm me-2">Результаты</a>
-                        <form method="post" action="{% url 'log_out' %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm">Выйти</button>
-                        </form>
-                    {% else %}
-                        <a href="{% url 'log_in' %}" class="btn btn-primary btn-sm">Войти</a>
-                    {% endif %}
+            <div class="row">
+                <div class="col-6 d-flex align-items-center">
+                    <h4>
+                        <strong style="font-size: 30px;">Quiz</strong><br>
+                        <span>cистема тестирования</span>
+                    </h4>
+                </div>
+                <div class="col-6 text-end">
+                    <div class="d-flex justify-content-end flex-row flex-wrap">
+                        {% if user.is_authenticated %}
+                            <div class="p-2 w-100">
+                                <span>Здравствуйте, <strong>{{ user.username }}</strong>!</span>
+                            </div>
+                            <div class="p-2">
+                                <a href="{% url 'user_results' %}" class="btn btn-primary btn-sm me-2">Результаты</a>
+                            </div>
+                            <div class="p-2">
+                                <form method="post" action="{% url 'log_out' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">Выйти</button>
+                                </form>
+                            </div>
+                        {% else %}
+                            <div class="p-2 w-100"></div>
+                            <div class="p-2">
+                                <a href="{% url 'log_in' %}" class="btn btn-primary btn-md">Войти</a>
+                            </div>
+                        {% endif %}
+                      </div>
                 </div>
             </div>
         </div>
     </header>
 
     <div class="container">
-        Описание платформы
+        <div class="row justify-content-center mt-5 mb-2">
+            <div class="col-6 text-center mt-5">
+                <h3>Возможность проверить знания</h3>
+                <p class="mt-4">Функционал данного проекта позволяет организовать проверку знаний учащихся посредством прохождения тестов. Учащиеся регистрируются, по ключу получают доступ к определенному тесту, проходят тест, видят статистику.</p>
+            </div>
+        </div>
+        <div class="row justify-content-center mt-5">
+            <div class="col-8 text-center"><a href="{% url 'test_create' %}" class="btn btn-primary btn-md">Создать тест</a></div>
+        </div>
 
-        <a href="{% url 'log_in' %}" class="btn btn-primary btn-sm">Создать тест</a>
-
-        <a href="{% url 'access_test' %}" class="btn btn-primary btn-sm">Пройти тест</a>
-        (у меня есть ключ доступа)
+        <div class="row justify-content-center mt-4">
+            <div class="col-8 text-center">
+                <a href="{% url 'access_test' %}" class="btn btn-primary btn-md">Пройти тест</a>
+                <p class="text-secondary mt-2">(у меня есть ключ доступа)</p>
+            </div>
+        </div>
+        
     </div>
 </body>
 
