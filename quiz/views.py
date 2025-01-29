@@ -256,7 +256,7 @@ class QuestionUpdateView(views.View):
 
 class QuestionDeleteView(views.View):
     def post(self, request, test_id, question_id):
-        question = get_object_or_404(Question, question_id=question_id)
+        question = get_object_or_404(Question, id=question_id)
         question.delete()
         return JsonResponse({'success': True})
 
