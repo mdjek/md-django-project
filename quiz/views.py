@@ -238,8 +238,8 @@ class QuestionCreateView(views.View):
 
 
 class QuestionUpdateView(views.View):
-    def post(self, request, test_id, pk):
-        question = get_object_or_404(Question, pk=pk)
+    def post(self, request, test_id, question_id):
+        question = get_object_or_404(Question, question_id=question_id)
         question.text = request.POST.get('text')
         question.score = request.POST.get('score')
         question.question_type = request.POST.get('type')
@@ -248,8 +248,8 @@ class QuestionUpdateView(views.View):
 
 
 class QuestionDeleteView(views.View):
-    def post(self, request, test_id, pk):
-        question = get_object_or_404(Question, pk=pk)
+    def post(self, request, test_id, question_id):
+        question = get_object_or_404(Question, question_id=question_id)
         question.delete()
         return JsonResponse({'success': True})
 

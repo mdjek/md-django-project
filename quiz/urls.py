@@ -51,9 +51,9 @@ urlpatterns = [
 
     path('test/<int:test_id>/question/create/', QuestionCreateView.as_view(), name='question_create'),
 
-    path('test/<int:test_id>/question/<int:pk>/update/', QuestionUpdateView.as_view(), name='question_update'),
+    path('test/<int:test_id>/question/<int:question_id>/update/', QuestionUpdateView.as_view(), name='question_update'),
 
-    path('test/<int:test_id>/question/<int:pk>/delete/', QuestionDeleteView.as_view(), name='question_delete'),
+    path('test/<int:test_id>/question/<int:question_id>/delete/', QuestionDeleteView.as_view(), name='question_delete'),
 
     path('test/<int:test_id>/question/<int:question_id>/answer/add/', AnswerAddView.as_view(), name='answer_add'),
 
