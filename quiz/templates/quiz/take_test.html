@@ -18,69 +18,72 @@
             </div>
         </div>
         <h1 class="mb-3">{{ test.name }}</h1>
-        <form id = "test-form" method="post">
+        <form id="test-form" method="post">
             {% csrf_token %}
-            {% for question in questions %}            
-                <div class="row mb-3">
-                    <div class="col-md-9 col-sm-8">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ forloop.counter }}. {{ question.text }}</h5>
-            
-                                {% if question.type == 1 %}
-                                {% for answer in question.answer_set.all %}
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" id="answer_{{ answer.id }}" name="question_{{ question.id }}" value="{{ answer.id }}">
-                                    <label class="form-check-label" for="answer_{{ answer.id }}">{{ answer.text }}</label>
-                                </div>
-                                {% endfor %}
-            
-                                {% elif question.type == 2 %}
-                                {% for answer in question.answer_set.all %}
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="answer_{{ answer.id }}" name="question_{{ question.id }}" value="{{ answer.id }}">
-                                    <label class="form-check-label" for="answer_{{ answer.id }}">{{ answer.text }}</label>
-                                </div>
-                                {% endfor %}
-            
-                                {% elif question.type == 3 %}
-                                <div class="form-group">
-                                    <input type="text" class="form-control" name="question_{{ question.id }}">
-                                </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-sm-4">
+            {% for question in questions %}
+            <div class="row mb-3">
+                <div class="col-md-9 col-sm-8">
+                    <div class="card">
                         <div class="card-body">
-                            <div class="alert alert-light">За правильный ответ будет начислено <strong>{{ question.score }}</strong> баллов</div>
+                            <h5 class="card-title">{{ forloop.counter }}. {{ question.text }}</h5>
+
+                            {% if question.type == 1 %}
+                            {% for answer in question.answers.all %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" id="answer_{{ answer.id }}"
+                                    name="question_{{ question.id }}" value="{{ answer.id }}">
+                                <label class="form-check-label" for="answer_{{ answer.id }}">{{ answer.text }}</label>
+                            </div>
+                            {% endfor %}
+
+                            {% elif question.type == 2 %}
+                            {% for answer in question.answers.all %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="answer_{{ answer.id }}"
+                                    name="question_{{ question.id }}" value="{{ answer.id }}">
+                                <label class="form-check-label" for="answer_{{ answer.id }}">{{ answer.text }}</label>
+                            </div>
+                            {% endfor %}
+
+                            {% elif question.type == 3 %}
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="question_{{ question.id }}">
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
+                <div class="col-md-3 col-sm-4">
+                    <div class="card-body">
+                        <div class="alert alert-light">За правильный ответ будет начислено <strong>{{ question.score
+                                }}</strong> баллов</div>
+                    </div>
+                </div>
+            </div>
             {% endfor %}
             <div class="row mb-3">
                 <div class="col-md-4 col-sm-6">
                     <button type="submit" class="btn btn-primary">Завершить тест</button>
-                </div>    
+                </div>
             </div>
         </form>
     </div>
-</body>
 
-<script>
-    let timeRemaining = {{ test.duration }} * 60;
-    const timerDisplay = document.getElementById('time');
-    const timerInterval = setInterval(() => {
-        const minutes = Math.floor(timeRemaining / 60);
-        const seconds = timeRemaining % 60;
-        timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        timeRemaining--;
-        if (timeRemaining < 0) {
-            clearInterval(timerInterval);
-            timerDisplay.textContent = 'Время вышло!';
-            document.getElementById('test-form').submit();
-        }
-    }, 1000);
-</script>
+    <script>
+        let timeRemaining = {{ test.duration }} * 60;
+        const timerDisplay = document.getElementById('time');
+        const timerInterval = setInterval(() => {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            timeRemaining--;
+            if (timeRemaining < 0) {
+                clearInterval(timerInterval);
+                timerDisplay.textContent = 'Время вышло!';
+                document.getElementById('test-form').submit();
+            }
+        }, 1000);
+    </script>
+</body>
 
 </html>
