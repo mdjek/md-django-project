@@ -1,7 +1,9 @@
 from django.urls import path
 from django.contrib.auth.views import LogoutView, LoginView
 from .views import TestView, AccessTestView, SignUpView, UserTestResultsView, TestDescriptionView, \
-    TestCreateView, TestUpdateView, TestDeleteView, TestListView, TestStatisticsView
+    TestCreateView, TestUpdateView, TestDeleteView, TestListView, TestStatisticsView, QuestionListView, \
+    QuestionCreateView, QuestionUpdateView, QuestionDeleteView, AnswerAddView, AnswerUpdateView, AnswerDeleteView, \
+    QuestionGetView, AnswerGetView
 
 urlpatterns = [
     # Главная страница
@@ -43,4 +45,23 @@ urlpatterns = [
     
     # Статистика по конкретному тесту
     path('test/<int:test_id>/statistics/', TestStatisticsView.as_view(), name='test_statistics'),
+
+    # Список вопросов к конкретному тесту
+    path('test/<int:test_id>/questions/', QuestionListView.as_view(), name='question_list'),
+
+    path('test/<int:test_id>/question/create/', QuestionCreateView.as_view(), name='question_create'),
+
+    path('test/<int:test_id>/question/<int:pk>/update/', QuestionUpdateView.as_view(), name='question_update'),
+
+    path('test/<int:test_id>/question/<int:pk>/delete/', QuestionDeleteView.as_view(), name='question_delete'),
+
+    path('test/<int:test_id>/question/<int:question_id>/answer/add/', AnswerAddView.as_view(), name='answer_add'),
+
+    path('test/<int:test_id>/question/<int:question_id>/answer/<int:answer_id>/update/', AnswerUpdateView.as_view(), name='answer_update'),
+
+    path('test/<int:test_id>/question/<int:question_id>/answer/<int:answer_id>/delete/', AnswerDeleteView.as_view(), name='answer_delete'),
+
+    path('test/<int:test_id>/question/<int:question_id>/', QuestionGetView.as_view(), name='get_question'),
+
+    path('test/<int:test_id>/question/<int:question_id>/answer/<int:answer_id>/', AnswerGetView.as_view(), name='get_answer'),
 ]

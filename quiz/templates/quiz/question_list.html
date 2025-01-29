@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список вопросов для теста: {{ test.name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+    <header class="bg-light p-3 mb-2">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    {% if user.is_authenticated %}
+                    <span class="me-3">Здравствуйте, {{ user.username }}!</span>
+                    <a href="{% url 'home' %}" class="btn btn-primary btn-sm me-2">Пройти тест</a>
+                    <a href="{% url 'user_results' %}" class="btn btn-primary btn-sm me-2">Результаты</a>
+                    <form method="post" action="{% url 'log_out' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">Выйти</button>
+                    </form>
+                    {% else %}
+                    <a href="{% url 'log_in' %}" class="btn btn-primary btn-sm">Войти</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="mb-3">Список вопросов для теста: {{ test.name }}</h1>
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createModal">Добавить вопрос</button>
+
+        <div class="question-list">
+            {% for question in questions %}
+            <div class="question-item mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <span class="question-number me-2">
+                                <strong>{{ forloop.counter }})</strong>
+                            </span>
+                            <span class="question-text" data-id="{{ question.id }}">
+                                {{ question.text }}
+                            </span>
+                            <div class="ms-auto">
+                                <button class="btn btn-warning btn-sm edit-btn"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editModal"
+                                        data-id="{{ question.id }}">
+                                    Редактировать
+                                </button>
+                                <button class="btn btn-danger btn-sm delete-btn" data-id="{{ question.id }}">Удалить</button>
+                                <button class="btn btn-success btn-sm add-answer-btn"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#addAnswerModal"
+                                        data-id="{{ question.id }}">
+                                    Добавить ответ
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-1">
+                            <h5>Ответы:</h5>
+                            <ul class="list-group" id="answers-list-{{ question.id }}">
+                                {% for answer in question.answers.all %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center" data-id="{{ answer.id }}">
+                                    <div>
+                                        <span class="answer-text">{{ answer.text }}</span>
+                                        {% if answer.is_correct %}<strong>(Правильный)</strong>{% endif %}
+                                    </div>
+                                    <div class="ms-auto">
+                                        <button class="btn btn-warning btn-sm edit-answer-btn"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#editAnswerModal"
+                                                data-id="{{ answer.id }}"
+                                                data-question-id="{{ question.id }}">
+                                            Редактировать
+                                        </button>
+                                        <button class="btn btn-danger btn-sm delete-answer-btn" data-id="{{ answer.id }}">Удалить</button>
+                                    </div>
+                                </li>
+                                {% endfor %}
+                                {% if question.answers.count == 0 %}
+                                <li class="list-group-item">У этого вопроса пока нет ответов</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="question-item mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <p>У этого теста пока нет вопросов</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <a href="{% url 'test_list' %}" class="btn btn-secondary mb-3">Вернуться к списку тестов</a>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Редактировать вопрос</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editQuestionForm" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" id="questionId">
+                        <div class="mb-3">
+                            <label for="questionText" class="form-label">Текст вопроса</label>
+                            <input type="text" class="form-control" id="questionText" name="text">
+                        </div>
+                        <div class="mb-3">
+                            <label for="questionScore" class="form-label">Балл</label>
+                            <input type="number" class="form-control" id="questionScore" name="score">
+                        </div>
+                        <div class="mb-3">
+                            <label for="questionType" class="form-label">Тип вопроса</label>
+                            <select class="form-select" id="questionType" name="type">
+                                <option value="1">Single Choice</option>
+                                <option value="2">Multiple Choice</option>
+                                <option value="3">Text Response</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createModalLabel">Создать новый вопрос</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createQuestionForm" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="newQuestionText" class="form-label">Текст вопроса</label>
+                            <input type="text" class="form-control" id="newQuestionText" name="text" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newQuestionScore" class="form-label">Балл</label>
+                            <input type="number" class="form-control" id="newQuestionScore" name="score" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newQuestionType" class="form-label">Тип вопроса</label>
+                            <select class="form-select" id="newQuestionType" name="type" required>
+                                <option value="1">Single Choice</option>
+                                <option value="2">Multiple Choice</option>
+                                <option value="3">Text Response</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Создать</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addAnswerModal" tabindex="-1" aria-labelledby="addAnswerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAnswerModalLabel">Добавить ответ к вопросу</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addAnswerForm" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="question_id" id="answerQuestionId">
+                        <div class="mb-3">
+                            <label for="answerText" class="form-label">Текст ответа</label>
+                            <input type="text" class="form-control" id="answerText" name="text" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="isCorrect" class="form-label">Правильный ответ</label>
+                            <select class="form-select" id="isCorrect" name="is_correct">
+                                <option value="False">Нет</option>
+                                <option value="True">Да</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Добавить ответ</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editAnswerModal" tabindex="-1" aria-labelledby="editAnswerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editAnswerModalLabel">Редактировать ответ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editAnswerForm" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="answer_id" id="editAnswerId">
+                        <input type="hidden" name="question_id" id="questionIdForEdit">
+                        <div class="mb-3">
+                            <label for="editAnswerText" class="form-label">Текст ответа</label>
+                            <input type="text" class="form-control" id="editAnswerText" name="text" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editIsCorrect" class="form-label">Правильный ответ</label>
+                            <select class="form-select" id="editIsCorrect" name="is_correct">
+                                <option value="False">Нет</option>
+                                <option value="True">Да</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            const testId = {{ test.id }};
+
+            $('#editModal').on('show.bs.modal', function(event) {
+                const button = $(event.relatedTarget);
+                const questionId = button.data('id');
+
+                $.ajax({
+                    type: 'GET',
+                    url: `/test/${testId}/question/${questionId}/`,
+                    success: function(data) {
+                        const modal = $('#editModal');
+                        modal.find('#questionId').val(data.id);
+                        modal.find('#questionText').val(data.text);
+                        modal.find('#questionScore').val(data.score);
+                        modal.find('#questionType').val(data.type);
+                    },
+                    error: function(xhr) {
+                        console.error('Ошибка при загрузке данных вопроса:', xhr.responseText);
+                    }
+                });
+            });
+
+            $(document).on('click', '.edit-answer-btn', function() {
+                const answerId = $(this).data('id');
+                const questionId = $(this).data('question-id');
+
+                $.ajax({
+                    type: 'GET',
+                    url: `/test/${testId}/question/${questionId}/answer/${answerId}/`,
+                    success: function(data) {
+                        $('#editAnswerId').val(data.id);
+                        $('#editAnswerText').val(data.text);
+                        $('#questionIdForEdit').val(questionId);
+
+                        // Устанавливаем значение селектора в зависимости от правильности ответа
+                        $('#editIsCorrect').val(data.is_correct ? 'True' : 'False');
+                    },
+                    error: function(xhr) {
+                        console.error('Ошибка при загрузке данных ответа:', xhr.responseText);
+                    }
+                });
+            });
+
+            $('#editQuestionForm').on('submit', function(e) {
+                e.preventDefault();
+                const questionId = $('#questionId').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: `/test/${testId}/question/${questionId}/update/`,
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        console.error('Ошибка при обновлении вопроса:', xhr.responseText);
+                    }
+                });
+            });
+
+            $('#createQuestionForm').on('submit', function(e) {
+                e.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: `/test/${testId}/question/create/`,
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        console.error('Ошибка при создании вопроса:', xhr.responseText);
+                    }
+                });
+            });
+
+            $('.add-answer-btn').on('click', function() {
+                const questionId = $(this).data('id');
+                $('#answerQuestionId').val(questionId);
+            });
+
+            $('#addAnswerForm').on('submit', function(e) {
+                e.preventDefault();
+                const questionId = $('#answerQuestionId').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: `/test/${testId}/question/${questionId}/answer/add/`,
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        const answersList = $('#answers-list-' + questionId);
+                        answersList.append(`
+                            <li class="list-group-item d-flex justify-content-between align-items-center" data-id="${response.id}">
+                                <div>
+                                    <span class="answer-text">${response.text}</span> ${response.is_correct ? '<strong>(Правильный)</strong>' : ''}
+                                </div>
+                                <div class="ms-auto">
+                                    <button class="btn btn-warning btn-sm edit-answer-btn"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editAnswerModal"
+                                            data-id="${response.id}"
+                                            data-question-id="${questionId}">
+                                        Редактировать
+                                    </button>
+                                    <button class="btn btn-danger btn-sm delete-answer-btn" data-id="${response.id}">Удалить</button>
+                                </div>
+                            </li>
+                        `);
+
+                        // Скрываем текст о том, что нет ответов, если он существует (если это первый ответ)
+                        if (answersList.find('.list-group-item:contains("У этого вопроса пока нет ответов")').length) {
+                            answersList.find('.list-group-item:contains("У этого вопроса пока нет ответов")').remove();
+                        }
+
+                        // Закрытие модального окна
+                        $('#addAnswerModal').modal('hide');
+                    },
+                    error: function(xhr) {
+                        console.error('Ошибка при добавлении ответа:', xhr.responseText);
+                    }
+                });
+            });
+
+            $('#editAnswerForm').on('submit', function(e) {
+                e.preventDefault();
+                const answerId = $('#editAnswerId').val();
+                const questionId = $('#questionIdForEdit').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: `/test/${testId}/question/${questionId}/answer/${answerId}/update/`,
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        const answerItem = $('li[data-id="' + answerId + '"]');
+                        answerItem.find('.answer-text').text(response.text);
+
+                        if (response.is_correct) {
+                            if (!answerItem.find('strong').length) {
+                                answerItem.find('.answer-text').append(' <strong>(Правильный)</strong>');
+                            }
+                        } else {
+                            answerItem.find('strong').remove();
+                        }
+                        $('#editAnswerModal').modal('hide');
+                    },
+                    error: function(xhr) {
+                        console.error('Ошибка при обновлении ответа:', xhr.responseText);
+                    }
+                });
+            });
+
+            $('.delete-btn').on('click', function() {
+                const questionId = $(this).data('id');
+                if (confirm('Вы уверены, что хотите удалить этот вопрос?')) {
+                    $.ajax({
+                        type: 'POST',
+                        url: `/test/${testId}/question/${questionId}/delete/`,
+                        data: {
+                            'csrfmiddlewaretoken': '{{ csrf_token }}'
+                        },
+                        success: function(response) {
+                            location.reload();
+                        }
+                    });
+                }
+            });
+
+            $('.delete-answer-btn').on('click', function() {
+                const answerId = $(this).data('id');
+                const questionId = $(this).closest('ul').attr('id').split('-')[2];
+                if (confirm('Вы уверены, что хотите удалить этот ответ?')) {
+                    $.ajax({
+                        type: 'POST',
+                        url: `/test/${testId}/question/${questionId}/answer/${answerId}/delete/`,
+                        data: {
+                            'csrfmiddlewaretoken': '{{ csrf_token }}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                $('li[data-id="' + answerId + '"]').remove();
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
