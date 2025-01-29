@@ -13,7 +13,12 @@
         <h1>Регистрация</h1>
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+            {% for field in form %}
+                <div class="fieldWrapper">
+                    <div>{{ field.label_tag }}</div>
+                    <div>{{ field }}</div>
+                </div>
+            {% endfor %}
             <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
         </form>
         <div class="mt-3">

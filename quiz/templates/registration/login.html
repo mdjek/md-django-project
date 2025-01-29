@@ -13,8 +13,13 @@
         <h1>Вход</h1>
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Войти</button>
+            {% for field in form %}
+                <div class="fieldWrapper">
+                    <div>{{ field.label_tag }}</div>
+                    <div>{{ field }}</div>
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary mt-2">Войти</button>
         </form>
         <div class="mt-3">
             <a href="{% url 'sign_up' %}" class="btn btn-secondary">Зарегистрироваться</a>
