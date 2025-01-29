@@ -26,7 +26,7 @@ class Question(models.Model):
         (2, 'Multiple Choice'),
         (3, 'Text Response')
     ]
-    test = models.ForeignKey(Test, on_delete=models.CASCADE)
+    test = models.ForeignKey(Test, related_name='questions', on_delete=models.CASCADE)
     text = models.TextField()
     score = models.IntegerField(default=10)  # Балл за вопрос
     type = models.IntegerField(choices=TYPE_CHOICES)
@@ -35,7 +35,7 @@ class Question(models.Model):
         return self.text
 
 class Answer(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, related_name='answers', on_delete=models.CASCADE)
     text = models.CharField(max_length=200)
     is_correct = models.BooleanField(default=False)
 

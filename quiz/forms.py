@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth.models import User
-from .models import Subject, Test
+from .models import Subject, Test, Question
+
 
 class SignUpForm(auth_forms.UserCreationForm):
     is_admin = forms.BooleanField(required=False, label="Зарегистрироваться как администратор")
@@ -9,6 +10,7 @@ class SignUpForm(auth_forms.UserCreationForm):
     class Meta:
         model = User
         fields = ('username', 'password1', 'password2', 'is_admin')
+
 
 class TestForm(forms.ModelForm):
     new_subject = forms.CharField(max_length=100, required=False, label="Новый предмет")
@@ -21,6 +23,10 @@ class TestForm(forms.ModelForm):
             'end_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['subject'].required = False
+
     def clean(self):
         cleaned_data = super().clean()
         subject = cleaned_data.get('subject')
@@ -28,12 +34,18 @@ class TestForm(forms.ModelForm):
 
         if not subject and not new_subject:
             raise forms.ValidationError("Выберите существующий предмет или введите новый")
-        
+
         if new_subject:
             subject, created = Subject.objects.get_or_create(name=new_subject)
             cleaned_data['subject'] = subject
 
         return cleaned_data
+
+
+class QuestionForm(forms.ModelForm):
+    class Meta:
+        model = Question
+        fields = ['text', 'score', 'type']
 
 
 class TestAccessForm(forms.Form):

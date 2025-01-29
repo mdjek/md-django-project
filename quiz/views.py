@@ -1,10 +1,11 @@
 # views.py
 from django import views
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, mixins
 from django.utils import timezone
-from quiz.models import Test, Question, UserTestResult, Subject
-from quiz.forms import SignUpForm, TestAccessForm, TestForm
+from quiz.models import Test, Question, UserTestResult, Subject, Answer
+from quiz.forms import SignUpForm, TestAccessForm, TestForm, QuestionForm
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 import secrets
@@ -12,6 +13,7 @@ from django.contrib.auth.decorators import permission_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.models import Group
+
 
 def custom_page_not_found_view(request, exception):
     return render(request, "system/error_page.html", {"title": "Страница не найдена", "status": 404})
@@ -59,6 +61,7 @@ class SignUpView(views.View):
                 return redirect('home')  # Перенаправляем обычного пользователя на главную страницу
         return render(request, 'registration/sign_up.html', {'form': form})
 
+
 class AccessTestView(views.View):
     def get(self, request):
         form = TestAccessForm()
@@ -74,6 +77,7 @@ class AccessTestView(views.View):
                 return redirect('test_description', test_id=test.id)
             return render(request, 'quiz/access_test.html', {'error_message': 'Тест недоступен в данное время'})
 
+
 class TestDescriptionView(mixins.LoginRequiredMixin, views.View):
     def get(self, request, test_id):
         test = get_object_or_404(Test, id=test_id)
@@ -84,6 +88,7 @@ class TestDescriptionView(mixins.LoginRequiredMixin, views.View):
             'question_count': question_count,
             'max_score': max_score,
         })
+
 
 class TestView(mixins.LoginRequiredMixin, views.View):
     def get(self, request, test_id):
@@ -115,10 +120,12 @@ class TestView(mixins.LoginRequiredMixin, views.View):
         UserTestResult.objects.create(user=request.user, test=test, score=score)
         return render(request, 'quiz/test_result.html', {'score': score, 'pass_score': test.pass_score})
 
+
 class UserTestResultsView(mixins.LoginRequiredMixin, views.View):
     def get(self, request):
         user_results = UserTestResult.objects.filter(user=request.user)
         return render(request, 'quiz/user_results.html', {'results': user_results})
+
 
 class TestCreateView(UserPassesTestMixin, views.View):
     template_name = 'quiz/test_form.html'
@@ -141,6 +148,7 @@ class TestCreateView(UserPassesTestMixin, views.View):
             return redirect(self.success_url)
         return render(request, self.template_name, {'form': form, 'action': 'Создать'})
 
+
 class TestUpdateView(UserPassesTestMixin, views.View):
     template_name = 'quiz/test_form.html'
     success_url = reverse_lazy('test_list')
@@ -161,6 +169,7 @@ class TestUpdateView(UserPassesTestMixin, views.View):
             return redirect(self.success_url)
         return render(request, self.template_name, {'form': form, 'action': 'Редактировать'})
 
+
 class TestDeleteView(UserPassesTestMixin, views.View):
     success_url = reverse_lazy('test_list')
 
@@ -172,6 +181,7 @@ class TestDeleteView(UserPassesTestMixin, views.View):
         test.delete()
         return redirect(self.success_url)
 
+
 class TestListView(UserPassesTestMixin, views.View):
     template_name = 'quiz/test_list.html'
 
@@ -181,6 +191,7 @@ class TestListView(UserPassesTestMixin, views.View):
     def get(self, request):
         tests = Test.objects.filter(created_by=request.user)
         return render(request, self.template_name, {'tests': tests})
+
 
 class TestStatisticsView(UserPassesTestMixin, views.View):
     template_name = 'quiz/test_statistics.html'
@@ -192,3 +203,100 @@ class TestStatisticsView(UserPassesTestMixin, views.View):
         test = get_object_or_404(Test, id=test_id, created_by=request.user)
         results = UserTestResult.objects.filter(test=test)
         return render(request, self.template_name, {'test': test, 'results': results})
+
+
+class QuestionListView(UserPassesTestMixin, views.View):
+    template_name = 'quiz/question_list.html'
+
+    def test_func(self):
+        return self.request.user.is_staff and self.request.user.groups.filter(name='Администраторы').exists()
+
+    def get(self, request, test_id):
+        test = get_object_or_404(Test, id=test_id, created_by=request.user)
+        questions = Question.objects.filter(test=test).prefetch_related('answers')
+        return render(request, self.template_name, {'test': test, 'questions': questions})
+
+
+class QuestionGetView(views.View):
+    def get(self, request, test_id, question_id):
+        question = get_object_or_404(Question, id=question_id)
+        data = {
+            'id': question.id,
+            'text': question.text,
+            'score': question.score,
+            'type': question.type,
+        }
+        return JsonResponse(data)
+
+
+class QuestionCreateView(views.View):
+    def post(self, request, test_id):
+        text = request.POST.get('text')
+        score = request.POST.get('score')
+        question_type = request.POST.get('type')
+        new_question = Question.objects.create(
+            text=text,
+            score=score,
+            type=question_type,
+            test_id=test_id
+        )
+        return JsonResponse({'newQuestionText': new_question.text})
+
+
+class QuestionUpdateView(views.View):
+    def post(self, request, test_id, question_id):
+        question = get_object_or_404(Question, question_id=question_id)
+        question.text = request.POST.get('text')
+        question.score = request.POST.get('score')
+        question.question_type = request.POST.get('type')
+        question.save()
+        return JsonResponse({'updatedText': question.text})
+
+
+class QuestionDeleteView(views.View):
+    def post(self, request, test_id, question_id):
+        question = get_object_or_404(Question, question_id=question_id)
+        question.delete()
+        return JsonResponse({'success': True})
+
+
+class AnswerGetView(views.View):
+    def get(self, request, test_id, question_id, answer_id):
+        answer = get_object_or_404(Answer, id=answer_id)
+        data = {
+            'id': answer.id,
+            'text': answer.text,
+            'is_correct': answer.is_correct,
+        }
+        return JsonResponse(data)
+
+
+class AnswerAddView(views.View):
+    def post(self, request, test_id, question_id):
+        text = request.POST.get('text')
+        is_correct = request.POST.get('is_correct') == 'True'
+        question = get_object_or_404(Question, id=question_id)
+        new_answer = Answer.objects.create(
+            text=text,
+            is_correct=is_correct,
+            question=question
+        )
+        return JsonResponse({'id': new_answer.id, 'text': new_answer.text, 'is_correct': new_answer.is_correct})
+
+
+class AnswerUpdateView(views.View):
+    def post(self, request, test_id, question_id, answer_id):
+        answer = get_object_or_404(Answer, id=answer_id)
+        text = request.POST.get('text')
+        is_correct = request.POST.get('is_correct') == 'True'
+        answer.text = text
+        answer.is_correct = is_correct
+        answer.save()
+        return JsonResponse({'id': answer.id, 'text': answer.text, 'is_correct': answer.is_correct})
+
+
+class AnswerDeleteView(views.View):
+    def post(self, request, test_id, question_id, answer_id):
+        answer = get_object_or_404(Answer, id=answer_id)
+        answer.delete()
+        return JsonResponse({'success': True})
