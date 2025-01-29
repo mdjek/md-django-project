@@ -16,7 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "mddjangoproject.pythonanywhere.com"]
 
@@ -80,7 +80,7 @@ DATABASES = {
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',  # Используем стандартный бэкенд аутентификации
+    "django.contrib.auth.backends.ModelBackend",  # Используем стандартный бэкенд аутентификации
 ]
 
 AUTH_PASSWORD_VALIDATORS = []  # Отключение валидаторов паролей (если это намеренно)
