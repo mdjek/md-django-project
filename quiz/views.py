@@ -246,7 +246,7 @@ class QuestionCreateView(views.View):
 
 class QuestionUpdateView(views.View):
     def post(self, request, test_id, question_id):
-        question = get_object_or_404(Question, question_id=question_id)
+        question = get_object_or_404(Question, id=question_id)
         question.text = request.POST.get('text')
         question.score = request.POST.get('score')
         question.question_type = request.POST.get('type')
