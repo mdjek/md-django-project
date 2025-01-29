@@ -1,4 +1,3 @@
-# views.py
 from django import views
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -81,10 +80,12 @@ class AccessTestView(views.View):
 class TestDescriptionView(mixins.LoginRequiredMixin, views.View):
     def get(self, request, test_id):
         test = get_object_or_404(Test, id=test_id)
-        question_count = Question.objects.filter(test=test).count()
-        max_score = sum(question.score for question in Question.objects.filter(test=test))
+        questions = Question.objects.filter(test=test).prefetch_related('answers') 
+        question_count = questions.count()
+        max_score = sum(question.score for question in questions)
         return render(request, 'quiz/test_description.html', {
             'test': test,
+            'questions': questions, 
             'question_count': question_count,
             'max_score': max_score,
         })
@@ -93,7 +94,7 @@ class TestDescriptionView(mixins.LoginRequiredMixin, views.View):
 class TestView(mixins.LoginRequiredMixin, views.View):
     def get(self, request, test_id):
         test = get_object_or_404(Test, id=test_id)
-        questions = Question.objects.filter(test=test)
+        questions = Question.objects.filter(test=test).prefetch_related('answers')  # Используем prefetch_related для оптимизации
         return render(request, 'quiz/take_test.html', {'test': test, 'questions': questions})
 
     def post(self, request, test_id):
@@ -101,7 +102,7 @@ class TestView(mixins.LoginRequiredMixin, views.View):
         questions = Question.objects.filter(test=test)
         score = 0
         for question in questions:
-            correct_answers = question.answer_set.filter(is_correct=True)
+            correct_answers = question.answers.filter(is_correct=True)
             if question.type == 1:
                 selected_answer = request.POST.get(f'question_{question.id}')
                 correct_answer = correct_answers.values_list('id', flat=True).first()
