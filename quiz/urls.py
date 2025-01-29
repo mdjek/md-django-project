@@ -3,11 +3,11 @@ from django.contrib.auth.views import LogoutView, LoginView
 from .views import TestView, AccessTestView, SignUpView, UserTestResultsView, TestDescriptionView, \
     TestCreateView, TestUpdateView, TestDeleteView, TestListView, TestStatisticsView, QuestionListView, \
     QuestionCreateView, QuestionUpdateView, QuestionDeleteView, AnswerAddView, AnswerUpdateView, AnswerDeleteView, \
-    QuestionGetView, AnswerGetView
+    QuestionGetView, AnswerGetView, MainPageView
 
 urlpatterns = [
     # Главная страница
-    path('', AccessTestView.as_view(), name='home'),
+    path('', MainPageView.as_view(), name='home'),
     
     # Страница регистрации
     path('sign-up', SignUpView.as_view(), name='sign_up'),
